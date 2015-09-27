@@ -8,7 +8,36 @@ router.get('/', function(req, res, next) {
     });
 });
 
-router.post('/', function(req, res) {
+router.post('/login', function(req, res) {
+    mon.User.findOne({
+        name: req.body.name
+    }, function(err, result) {
+        try {
+            if (result) {
+                if (result.password == req.body.password) {
+                    res.json({
+                        name: req.body.name,
+                        permission: true
+                    })
+                } else {
+                    res.json({
+                        name: req.body.name,
+                        permission: false
+                    })
+                }
+            } else {
+                res.json({
+                    name: req.body.name,
+                    permission: false
+                })
+            }
+        } catch (err) {
+            console.log(err);
+        }
+    });
+})
+
+router.post('/register', function(req, res) {
     //console.log(req.body);
     mon.User.find({}).exec(function(err, result) {
         try {

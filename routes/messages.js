@@ -5,13 +5,28 @@ var router = express.Router();
 var mon = require('../mon');
 
 router.get('/', function(req, res, next) {
-    res.json({
-        name: "messages"
-    });
+    mon.Message.find({}, function(err, result){
+        res.send(result);
+    })
 });
 
-router.post('/', function(req, res) {
-    //console.log(req.body);
+router.post('/pull', function(req, res) {
+    //get all messages of one person to another
+    mon.Message.findOne({
+        from: req.body.from,
+        to: req.body.to
+    }, function(err, doc) {
+        if (err) return handleError(err);
+        if (doc) {
+            res.send(doc);
+            console.log('found doc :' + doc);
+        } else {
+            console.log('nothing found');
+        }
+    })
+});
+
+router.post('/push', function(req, res) {
     mon.Message.find({}).exec(function(err, result) {
         try {
             mon.Message.count({
@@ -19,10 +34,11 @@ router.post('/', function(req, res) {
                 to: req.body.to
             }, function(err, count) {
                 if (count == 0) {
+                    //if this particular user to user chat doesn't exists, make new
                     message = new mon.Message({
                         from: req.body.from,
                         to: req.body.to,
-                        communication: req.body.communication
+                        communication: req.body.newCommunication
                     });
 
                     message.save(function(err) {
@@ -35,14 +51,27 @@ router.post('/', function(req, res) {
                             return console.log(err);
                         }
                     });
-                    res.send(message);
+                    res.write(message);
                     res.end();
                 } else {
-                    res.send("message already exists");
-                    res.end();
-                    //
-                    //Code here to update document
-                    //
+                    //if this chat already exists, add the newCommunication to existing
+                    console.log('document already exists, adding communication anew');
+                    mon.Message.findOneAndUpdate({
+                        from: req.body.from,
+                        to: req.body.to
+                    }, {
+                        $push: {
+                            "communication": req.body.newCommunication
+                        }
+                    }, {
+                        upsert: true
+                    }, function(err, doc) {
+                        if (err) return res.send(500, {
+                            error: err
+                        });
+                        res.write("succesfully added new communications");
+                        res.end();
+                    });
                 }
             });
         } catch (err) {
