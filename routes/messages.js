@@ -51,7 +51,7 @@ router.post('/push', function(req, res) {
                             return console.log(err);
                         }
                     });
-                    res.write(message);
+                    res.send(message);
                     res.end();
                 } else {
                     //if this chat already exists, add the newCommunication to existing
