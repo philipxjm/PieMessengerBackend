@@ -62,13 +62,13 @@ router.post('/register', function(req, res) {
                     });
                     res.json({
                         name: req.body.name,
-                        registered: true
+                        registered: false
                     })
                     res.end();
                 } else {
                     res.json({
                         name: req.body.name,
-                        registered: false
+                        registered: true
                     })
                     res.end();
                 }
