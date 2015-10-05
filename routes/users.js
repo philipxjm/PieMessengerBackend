@@ -3,8 +3,8 @@ var router = express.Router();
 var mon = require('../mon');
 
 router.get('/', function(req, res, next) {
-    res.json({
-        name: "users"
+    mon.User.find({}, function(err, result) {
+        res.json(result);
     });
 });
 
