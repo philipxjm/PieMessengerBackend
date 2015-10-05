@@ -3,8 +3,8 @@ var router = express.Router();
 var mon = require('../mon');
 
 router.get('/', function(req, res, next) {
-    res.json({
-        name: "users"
+    mon.User.find({}, function(err, result) {
+        res.json(result);
     });
 });
 
@@ -42,12 +42,11 @@ router.post('/register', function(req, res) {
     mon.User.find({}).exec(function(err, result) {
         try {
             mon.User.count({
-                email: req.body.email
+                name: req.body.name
             }, function(err, count) {
                 if (count == 0) {
                     user = new mon.User({
                         name: req.body.name,
-                        email: req.body.email,
                         password: req.body.password
                     });
 
@@ -61,10 +60,16 @@ router.post('/register', function(req, res) {
                             return console.log(err);
                         }
                     });
-                    res.send(user);
+                    res.json({
+                        name: req.body.name,
+                        registered: false
+                    })
                     res.end();
                 } else {
-                    res.send("user already exists");
+                    res.json({
+                        name: req.body.name,
+                        registered: true
+                    })
                     res.end();
                 }
             });
