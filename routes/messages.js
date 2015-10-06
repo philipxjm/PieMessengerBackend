@@ -5,7 +5,7 @@ var router = express.Router();
 var mon = require('../mon');
 
 router.get('/', function(req, res, next) {
-    mon.Message.find({}, function(err, result){
+    mon.Message.find({}, function(err, result) {
         res.send(result);
     })
 });
@@ -69,7 +69,9 @@ router.post('/push', function(req, res) {
                         if (err) return res.send(500, {
                             error: err
                         });
-                        res.write("succesfully added new communications");
+                        res.json({
+                            'status' : true
+                        })
                         res.end();
                     });
                 }
