@@ -21,6 +21,7 @@ router.post('/pull', function(req, res) {
             res.send(doc);
             console.log('found doc :' + doc);
         } else {
+            res.json({});
             console.log('nothing found');
         }
     })
