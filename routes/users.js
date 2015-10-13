@@ -4,7 +4,12 @@ var mon = require('../mon');
 
 router.get('/', function(req, res, next) {
     mon.User.find({}, function(err, result) {
-        res.json(result);
+        //res.writeHead(200, {'Content-Type' : 'application/json'});
+        var jobj = [];
+        result.forEach(function(record) {
+            jobj.push({'name' : record.name})
+        })
+        res.json(jobj);
     });
 });
 
